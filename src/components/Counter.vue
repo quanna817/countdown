@@ -1,6 +1,9 @@
 <template id="app">
   <div>
-    <section class="text-3xl flex justify-center content-center flex-col mx-auto text-center">Sắp đến tết rồi chỉ còn...</section>
+    <section class="text-3xl flex justify-center content-center flex-col mx-auto text-center">
+      <h3 v-if="!expired">Sắp đến tết rồi chỉ còn...</h3>
+      <h3 v-else>Happy New Year</h3>
+    </section>
     <section class="flex text-6xl justify-center content-center">
       <div class="days mr-2 relative">
         {{ displayDays  }}
@@ -33,7 +36,8 @@ export default {
       displayDays: 0,
       displayHours: 0,
       displayMinutes: 0,
-      displaySeconds: 0
+      displaySeconds: 0,
+      expired: false
     }
   },
   computed: {
@@ -50,9 +54,9 @@ export default {
   },
   mounted () {
     this.showRemaining()
-    console.log(this.showRemaining)
   },
   methods: {
+    formatNum: num => (num < 10 ? '0' + num : num),
     showRemaining () {
       const timer = setInterval(() => {
         const now = new Date()
@@ -60,6 +64,7 @@ export default {
         const distance = end.getTime() - now.getTime()
         if (distance < 0) {
           clearInterval(timer)
+          this.expired = true
           return
         }
         const days = Math.floor(distance / this._days)
@@ -67,10 +72,10 @@ export default {
         const minutes = Math.floor((distance % this._hours) / this._minutes)
         const seconds = Math.floor((distance % this._minutes) / this._seconds)
 
-        this.displayMinutes = minutes < 10 ? '0' + minutes : minutes
-        this.displaySeconds = seconds < 10 ? '0' + seconds : seconds
-        this.displayHours = hours < 10 ? '0' + hours : hours
-        this.displayDays = days < 10 ? '0' + days : days
+        this.displayMinutes = this.formatNum(minutes)
+        this.displaySeconds = this.formatNum(seconds)
+        this.displayHours = this.formatNum(hours)
+        this.displayDays = this.formatNum(days)
       }, 1000)
     }
   }
@@ -81,7 +86,7 @@ export default {
     margin-top: -10px;
   }
   .app {
-    background-image: 'https://i.pinimg.com/564x/34/08/c7/3408c7efe8409f0c817cc11905b121d4.jpg';
+    background-image: '';
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
